@@ -3,8 +3,6 @@
 # configs/runtime.yml中save_dir改为: output/yolov3_mobilenet_v1_roadsign
 # configs/yolov3/_base_/optimizer_40e.yml中base_lr改为: 1.25e-5
 
-export GLOG_v=4
-
 selected_gpus="0"
 output_dir=output/yolov3_mobilenet_v1_roadsign
 
@@ -23,6 +21,7 @@ elif [ -n "$hygon_gpu" ]; then
     export HIP_VISIBLE_DEVICES=$selected_gpus
 else
     echo "No GPU is detected"
+    exit 1
 fi
 
 # training standalone
@@ -32,6 +31,8 @@ python tools/train.py -c configs/yolov3/yolov3_mobilenet_v1_roadsign.yml \
 if [ $? -ne 0 ]; then
     echo "Training failed"
     exit 1
+else
+    echo "Training finished, log saved in ${output_dir}/train.log"
 fi
 
 # evaluation
@@ -41,6 +42,8 @@ python tools/eval.py -c configs/yolov3/yolov3_mobilenet_v1_roadsign.yml \
 if [ $? -ne 0 ]; then
     echo "Evaluation failed"
     exit 1
+else
+    echo "Evaluation finished, log saved in ${output_dir}/eval.log"
 fi
 
 # inference
@@ -51,4 +54,6 @@ python tools/infer.py -c configs/yolov3/yolov3_mobilenet_v1_roadsign.yml \
 if [ $? -ne 0 ]; then
     echo "Inference failed"
     exit 1
+else
+    echo "Inference finished, log saved in ${output_dir}/infer.log"
 fi
