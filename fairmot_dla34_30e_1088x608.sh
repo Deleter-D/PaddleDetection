@@ -28,7 +28,7 @@ fi
 
 # training standalone
 python tools/train.py -c ${configs_file} \
-    --use_vdl=True --eval > ${output_dir}/train.log 2>&1
+    --use_vdl=True > ${output_dir}/train.log 2>&1
 
 if [ $? -ne 0 ]; then
     echo "Training failed"
@@ -38,8 +38,8 @@ else
 fi
 
 # evaluation
-python tools/eval.py -c ${configs_file} \
-    -o weights=${output_dir}/best_model.pdparams > ${output_dir}/eval.log 2>&1
+python tools/eval_mot.py -c ${configs_file} \
+    -o weights=${output_dir}/model_final.pdparams > ${output_dir}/eval.log 2>&1
 
 if [ $? -ne 0 ]; then
     echo "Evaluation failed"
@@ -49,9 +49,10 @@ else
 fi
 
 # inference
-python tools/infer.py -c ${configs_file} \
-    --infer_img=demo/road554.png --output_dir=${output_dir} \
-    -o weights=${output_dir}/best_model.pdparams > ${output_dir}/infer.log 2>&1
+python tools/infer_mot.py -c ${configs_file} \
+    --video_file=dataset/mot/MOT16/images/train/MOT16-02/test.mp4 \
+    --output_dir=${output_dir} --save_videos \
+    -o weights=${output_dir}/model_final.pdparams > ${output_dir}/infer.log 2>&1
 
 if [ $? -ne 0 ]; then
     echo "Inference failed"
